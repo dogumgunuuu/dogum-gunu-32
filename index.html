@@ -1,0 +1,383 @@
+```html
+<!DOCTYPE html>
+<html lang="tr">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Doğum Günü Sürprizi 🎂</title>
+
+<link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;600;700&display=swap" rel="stylesheet">
+
+<style>
+*{
+    margin:0;
+    padding:0;
+    box-sizing:border-box;
+    font-family:'Poppins',sans-serif;
+}
+
+body{
+    min-height:100vh;
+    overflow:hidden;
+    background:linear-gradient(135deg,#ff9a9e,#fad0c4,#fbc2eb,#a18cd1);
+    background-size:400% 400%;
+    animation:bgMove 12s ease infinite;
+}
+
+@keyframes bgMove{
+    0%{background-position:0% 50%}
+    50%{background-position:100% 50%}
+    100%{background-position:0% 50%}
+}
+
+.page{
+    min-height:100vh;
+    display:flex;
+    justify-content:center;
+    align-items:center;
+    padding:20px;
+}
+
+.card{
+    width:100%;
+    max-width:650px;
+    background:rgba(255,255,255,.18);
+    backdrop-filter:blur(15px);
+    border-radius:24px;
+    padding:30px;
+    text-align:center;
+    color:white;
+    box-shadow:0 15px 40px rgba(0,0,0,.2);
+}
+
+h1{
+    margin-bottom:20px;
+}
+
+input,textarea{
+    width:100%;
+    border:none;
+    border-radius:14px;
+    padding:14px;
+    margin:10px 0;
+    font-size:16px;
+}
+
+textarea{
+    resize:none;
+    height:120px;
+}
+
+button{
+    border:none;
+    border-radius:14px;
+    padding:14px 22px;
+    background:#ff4081;
+    color:white;
+    cursor:pointer;
+    font-size:16px;
+    font-weight:700;
+    transition:.25s;
+}
+
+button:hover{
+    transform:scale(1.05);
+}
+
+.linkBox{
+    margin-top:20px;
+    word-break:break-all;
+}
+
+.hidden{
+    display:none;
+}
+
+.birthday{
+    text-align:center;
+    color:white;
+    z-index:2;
+}
+
+.birthday h1{
+    font-size:4rem;
+    animation:pulse 1.2s infinite;
+}
+
+.birthday h2{
+    font-size:2rem;
+    margin-top:10px;
+}
+
+.birthday p{
+    margin-top:25px;
+    font-size:1.2rem;
+}
+
+@keyframes pulse{
+    0%,100%{transform:scale(1)}
+    50%{transform:scale(1.1)}
+}
+
+.balloon{
+    position:absolute;
+    bottom:-200px;
+    border-radius:50%;
+    opacity:.9;
+    animation:float linear infinite;
+}
+
+.balloon::after{
+    content:"";
+    position:absolute;
+    width:2px;
+    height:80px;
+    background:white;
+    left:50%;
+    top:100%;
+}
+
+@keyframes float{
+    from{
+        transform:translateY(0);
+    }
+    to{
+        transform:translateY(-130vh);
+    }
+}
+
+.glow{
+    position:absolute;
+    width:8px;
+    height:8px;
+    border-radius:50%;
+    background:white;
+    animation:twinkle 2s infinite;
+}
+
+@keyframes twinkle{
+    0%,100%{
+        opacity:.2;
+        transform:scale(.5);
+    }
+    50%{
+        opacity:1;
+        transform:scale(1.8);
+    }
+}
+
+.copyBtn{
+    margin-top:10px;
+}
+
+@media(max-width:768px){
+    .birthday h1{
+        font-size:2.5rem;
+    }
+
+    .birthday h2{
+        font-size:1.5rem;
+    }
+
+    .birthday p{
+        font-size:1rem;
+    }
+}
+</style>
+</head>
+
+<body>
+
+<div id="creatorPage" class="page">
+    <div class="card">
+        <h1>🎂 Doğum Günü Linki Oluştur</h1>
+
+        <input id="name" placeholder="Doğum günü sahibinin adı">
+
+        <textarea id="message"
+        placeholder="Özel mesajını yaz..."></textarea>
+
+        <button onclick="createLink()">
+            🎉 Link Oluştur
+        </button>
+
+        <div id="result" class="linkBox"></div>
+    </div>
+</div>
+
+<div id="birthdayPage" class="page hidden">
+    <div class="birthday">
+        <h1>🎂 İYİ Kİ DOĞDUN 🎂</h1>
+        <h2 id="birthdayName"></h2>
+        <p id="birthdayMessage"></p>
+    </div>
+</div>
+
+<script src="https://cdn.jsdelivr.net/npm/canvas-confetti@1.9.3/dist/confetti.browser.min.js"></script>
+
+<script>
+const params = new URLSearchParams(location.search);
+
+if(params.get("name")){
+    showBirthday();
+}
+
+function createLink(){
+
+    const name =
+    document.getElementById("name").value.trim();
+
+    const message =
+    document.getElementById("message").value.trim();
+
+    if(!name){
+        alert("İsim gir.");
+        return;
+    }
+
+    const url =
+    location.origin +
+    location.pathname +
+    "?name=" +
+    encodeURIComponent(name) +
+    "&msg=" +
+    encodeURIComponent(message);
+
+    document.getElementById("result").innerHTML = `
+        <p>Paylaşılabilir Link:</p>
+        <br>
+        <a style="color:white;" href="${url}">
+            ${url}
+        </a>
+        <br><br>
+        <button class="copyBtn"
+        onclick="copyLink('${url}')">
+        📋 Kopyala
+        </button>
+    `;
+}
+
+function copyLink(url){
+    navigator.clipboard.writeText(url);
+    alert("Link kopyalandı!");
+}
+
+function showBirthday(){
+
+    document.getElementById("creatorPage")
+    .classList.add("hidden");
+
+    document.getElementById("birthdayPage")
+    .classList.remove("hidden");
+
+    const name = params.get("name");
+    const msg = params.get("msg") || "";
+
+    document.getElementById("birthdayName")
+    .innerText = name;
+
+    document.getElementById("birthdayMessage")
+    .innerText = msg;
+
+    launchConfetti();
+    createBalloons();
+    createStars();
+}
+
+function launchConfetti(){
+
+    const duration = 15000;
+    const end = Date.now() + duration;
+
+    (function frame(){
+
+        confetti({
+            particleCount:4,
+            angle:60,
+            spread:60,
+            origin:{x:0}
+        });
+
+        confetti({
+            particleCount:4,
+            angle:120,
+            spread:60,
+            origin:{x:1}
+        });
+
+        if(Date.now() < end){
+            requestAnimationFrame(frame);
+        }
+
+    })();
+}
+
+function createBalloons(){
+
+    const colors = [
+        "#ff4d6d",
+        "#ffd166",
+        "#06d6a0",
+        "#118ab2",
+        "#ff85a1",
+        "#9b5de5"
+    ];
+
+    for(let i=0;i<25;i++){
+
+        const balloon =
+        document.createElement("div");
+
+        const size =
+        Math.random()*60+40;
+
+        balloon.classList.add("balloon");
+
+        balloon.style.width =
+        size+"px";
+
+        balloon.style.height =
+        size*1.2+"px";
+
+        balloon.style.left =
+        Math.random()*100+"%";
+
+        balloon.style.background =
+        colors[Math.floor(Math.random()*colors.length)];
+
+        balloon.style.animationDuration =
+        (8+Math.random()*10)+"s";
+
+        balloon.style.animationDelay =
+        Math.random()*5+"s";
+
+        document.body.appendChild(balloon);
+    }
+}
+
+function createStars(){
+
+    for(let i=0;i<80;i++){
+
+        const star =
+        document.createElement("div");
+
+        star.classList.add("glow");
+
+        star.style.left =
+        Math.random()*100+"vw";
+
+        star.style.top =
+        Math.random()*100+"vh";
+
+        star.style.animationDelay =
+        Math.random()*2+"s";
+
+        document.body.appendChild(star);
+    }
+}
+</script>
+
+</body>
+</html>
+```
